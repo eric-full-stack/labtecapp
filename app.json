@@ -1,0 +1,39 @@
+{
+  "expo": {
+    "name": "LGBT Friendly",
+    "slug": "LGBTFriendly",
+    "privacy": "public",
+    "sdkVersion": "35.0.0",
+    "platforms": ["ios", "android", "web"],
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": ["**/*"],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.lgbtfriendly",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCd84shidpHvlHFI0b5P0odF8sAzhocTj0"
+        }
+      }
+    }
+  },
+  "android": {
+    "config": {
+      "googleMaps": {
+        "apiKey": "AIzaSyCd84shidpHvlHFI0b5P0odF8sAzhocTj0"
+      }
+    }
+  }
+}
