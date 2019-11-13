@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
-  ImageBackground,
+  StatusBar,
   ScrollView,
   TextInput,
   AsyncStorage,
@@ -67,86 +67,81 @@ export default class AlterarSenha extends React.Component {
 
   render() {
     return (
-      <ImageBackground
-        source={require("../assets/icons/fundo.jpg")}
-        style={{ width: "100%", height: "100%" }}
-      >
-        <View style={styles.view}>
-          <View style={styles.header}>
-            <TouchableHighlight
-              onPress={() => this.props.navigation.openDrawer()}
-              underlayColor={"#FFFFFF00"}
-            >
-              <Image
-                source={require("../assets/icons/back.png")}
-                style={styles.icon}
-              />
-            </TouchableHighlight>
-            <Text style={styles.text}>ALTERAR SENHA</Text>
-            <View style={[{ width: 45 }]} />
-          </View>
-          <ScrollView>
-            <View style={{ alignItems: "center", marginTop: 30 }}>
-              <View>
-                <Text style={styles.inputTitle}>Nova Senha</Text>
-                <TextInput
-                  style={{
-                    height: 50,
-                    backgroundColor: "#fff",
-                    width: width - 50,
-                    fontSize: 16,
-                    paddingLeft: 15,
-                    marginBottom: 15
-                  }}
-                  onChangeText={newPassword => this.setState({ newPassword })}
-                  value={this.state.newPassword}
-                  secureTextEntry={true}
-                  textContentType={"password"}
-                  placeholder={"Nova Senha"}
-                />
-              </View>
-
-              <View>
-                <Text style={styles.inputTitle}>Confirmar Nova Senha</Text>
-                <TextInput
-                  style={{
-                    height: 50,
-                    backgroundColor: "#fff",
-                    width: width - 50,
-                    fontSize: 16,
-                    paddingLeft: 15,
-                    marginBottom: 15
-                  }}
-                  onChangeText={confirmNewPassword =>
-                    this.setState({ confirmNewPassword })
-                  }
-                  value={this.state.confirmNewPassword}
-                  secureTextEntry={true}
-                  textContentType={"password"}
-                  placeholder={"Repetir Nova Senha"}
-                />
-              </View>
-              {!this.state.loading ? (
-                <TouchableHighlight
-                  onPress={this.handleNewPassword.bind(this)}
-                  underlayColor={"#FFFFFF00"}
-                >
-                  <LinearGradient
-                    start={{ x: 0, y: 1 }}
-                    end={{ x: 1, y: 1 }}
-                    colors={["#D11C46", "#FA8624"]}
-                    style={styles.button}
-                  >
-                    <Text style={styles.bottonText}>SALVAR</Text>
-                  </LinearGradient>
-                </TouchableHighlight>
-              ) : (
-                <ActivityIndicator size="large" />
-              )}
-            </View>
-          </ScrollView>
+      <View style={{ width: "100%", height: "100%" }}>
+        <View style={styles.header}>
+          <TouchableHighlight
+            onPress={() => this.props.navigation.openDrawer()}
+            underlayColor={"#FFFFFF00"}
+          >
+            <Image
+              source={require("../assets/icons/back.png")}
+              style={styles.icon}
+            />
+          </TouchableHighlight>
+          <Text style={styles.text}>ALTERAR SENHA</Text>
+          <View style={[{ width: 45 }]} />
         </View>
-      </ImageBackground>
+        <ScrollView style={styles.view}>
+          <View style={{ alignItems: "center", marginTop: 30 }}>
+            <View>
+              <Text style={styles.inputTitle}>Nova Senha</Text>
+              <TextInput
+                style={{
+                  height: 50,
+                  backgroundColor: "#fff",
+                  width: width - 50,
+                  fontSize: 16,
+                  paddingLeft: 15,
+                  marginBottom: 15
+                }}
+                onChangeText={newPassword => this.setState({ newPassword })}
+                value={this.state.newPassword}
+                secureTextEntry={true}
+                textContentType={"password"}
+                placeholder={"Nova Senha"}
+              />
+            </View>
+
+            <View>
+              <Text style={styles.inputTitle}>Confirmar Nova Senha</Text>
+              <TextInput
+                style={{
+                  height: 50,
+                  backgroundColor: "#fff",
+                  width: width - 50,
+                  fontSize: 16,
+                  paddingLeft: 15,
+                  marginBottom: 15
+                }}
+                onChangeText={confirmNewPassword =>
+                  this.setState({ confirmNewPassword })
+                }
+                value={this.state.confirmNewPassword}
+                secureTextEntry={true}
+                textContentType={"password"}
+                placeholder={"Repetir Nova Senha"}
+              />
+            </View>
+            {!this.state.loading ? (
+              <TouchableHighlight
+                onPress={this.handleNewPassword.bind(this)}
+                underlayColor={"#FFFFFF00"}
+              >
+                <LinearGradient
+                  start={{ x: 0, y: 1 }}
+                  end={{ x: 1, y: 1 }}
+                  colors={["#D11C46", "#FA8624"]}
+                  style={styles.button}
+                >
+                  <Text style={styles.bottonText}>SALVAR</Text>
+                </LinearGradient>
+              </TouchableHighlight>
+            ) : (
+              <ActivityIndicator size="large" />
+            )}
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -170,9 +165,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10,
     paddingLeft: 10,
-    paddingTop: 20,
-    borderBottomWidth: 2,
-    borderColor: "#fff"
+    marginTop: StatusBar.currentHeight
   },
   icon: {
     height: 32,

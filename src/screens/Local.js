@@ -6,18 +6,19 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
-  ImageBackground,
   Dimensions,
   ScrollView,
   Linking,
   AsyncStorage,
+  StatusBar,
   ActivityIndicator,
   FlatList
 } from "react-native";
-
+import openMap from "react-native-open-maps";
 import { LinearGradient } from "expo-linear-gradient";
 
-import { Rating } from "react-native-ratings";
+import Rating from "react-native-rating";
+import images from "../components/RatingImages";
 
 import MapView, { Marker } from "react-native-maps";
 
@@ -71,12 +72,8 @@ export default function Local(props) {
     }
     setLoading(false);
   };
-
   return (
-    <ImageBackground
-      source={require("../assets/icons/fundo.jpg")}
-      style={{ width: "100%", height: "100%" }}
-    >
+    <View style={{ flex: 1 }}>
       {loading && <ActivityIndicator size="large" color="#0000ff" />}
       {!loading && data && (
         <View style={styles.view}>
@@ -201,6 +198,7 @@ export default function Local(props) {
                   </TouchableHighlight>
                 </View>
                 {/*AVALIAÇÃO MÉDIA*/}
+
                 <View
                   style={{
                     marginTop: 25,
@@ -210,12 +208,28 @@ export default function Local(props) {
                     justifyContent: "center"
                   }}
                 >
-                  <Rating
-                    type="heart"
-                    startingValue={data.votes ? data.votes : 5}
-                    imageSize={45}
-                    readonly
-                  />
+                  <TouchableHighlight
+                    onPress={() =>
+                      props.navigation.navigate("Avaliar", {
+                        name: data.name,
+                        placeId: data._id,
+                        vote: data.my_vote
+                      })
+                    }
+                  >
+                    <Rating
+                      selectedStar={images.starFilled}
+                      unselectedStar={images.starUnfilled}
+                      stagger={80}
+                      maxScale={1.4}
+                      starStyle={{
+                        width: 32,
+                        height: 32
+                      }}
+                      initial={data.votes || 0}
+                      editable={false}
+                    />
+                  </TouchableHighlight>
                   <Text style={{ color: "#000" }}>
                     ({data.total_votes ? data.total_votes : 0})
                   </Text>
@@ -297,12 +311,34 @@ export default function Local(props) {
                       <MapView
                         style={{ flex: 1, ...StyleSheet.absoluteFillObject }}
                         minZoomLevel={15}
+                        zoomEnabled={false}
+                        zoomControlEnabled={false}
+                        zoomTapEnabled={false}
+                        rotateEnabled={false}
+                        scrollEnabled={false}
+                        pitchEnabled={false}
                         initialRegion={{
                           longitude: data.geometry.location.lng,
                           latitude: data.geometry.location.lat,
                           latitudeDelta: 0.0922,
                           longitudeDelta: 0.0421
                         }}
+                        onPress={() =>
+                          openMap({
+                            latitude: data.geometry.location.lat,
+                            longitude: data.geometry.location.lng,
+                            end: data.name,
+                            zoom: 30
+                          })
+                        }
+                        onMarkerPress={() =>
+                          openMap({
+                            latitude: data.geometry.location.lat,
+                            longitude: data.geometry.location.lng,
+                            end: data.name,
+                            zoom: 30
+                          })
+                        }
                       >
                         <Marker
                           coordinate={{
@@ -350,7 +386,8 @@ export default function Local(props) {
                       onPress={() =>
                         props.navigation.navigate("Avaliar", {
                           name: data.name,
-                          placeId: data._id
+                          placeId: data._id,
+                          vote: data.my_vote
                         })
                       }
                       underlayColor={"#FFFFFF00"}
@@ -374,10 +411,16 @@ export default function Local(props) {
                     }}
                   >
                     <Rating
-                      type="heart"
-                      startingValue={data.votes ? data.votes : 5}
-                      readonly
-                      imageSize={45}
+                      selectedStar={images.starFilled}
+                      unselectedStar={images.starUnfilled}
+                      stagger={80}
+                      maxScale={1.4}
+                      starStyle={{
+                        width: 32,
+                        height: 32
+                      }}
+                      initial={data.votes || 0}
+                      editable={false}
                     />
                     <Text style={{ color: "#fff" }}>({data.total_votes})</Text>
                   </View>
@@ -398,7 +441,7 @@ export default function Local(props) {
           )}
         </View>
       )}
-    </ImageBackground>
+    </View>
   );
 }
 
@@ -420,9 +463,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10,
     paddingLeft: 10,
-    paddingTop: 20,
     borderBottomWidth: 2,
-    borderColor: "#000"
+    borderColor: "#000",
+    marginTop: StatusBar.currentHeight
   },
   icon: {
     height: 32,

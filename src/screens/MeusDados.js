@@ -6,10 +6,10 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
-  ImageBackground,
   TextInput,
   Dimensions,
   ActivityIndicator,
+  StatusBar,
   AsyncStorage,
   KeyboardAvoidingView,
   ScrollView
@@ -79,10 +79,7 @@ export default class MeusDados extends React.Component {
   render() {
     return (
       <KeyboardAvoidingView behavior="padding" enabled>
-        <ImageBackground
-          source={require("../assets/icons/fundo.jpg")}
-          style={{ width: "100%", height: "100%" }}
-        >
+        <View style={{ width: "100%", height: "100%" }}>
           <View style={styles.header}>
             <TouchableHighlight
               onPress={() => this.props.navigation.openDrawer()}
@@ -224,7 +221,7 @@ export default class MeusDados extends React.Component {
               )}
             </View>
           </ScrollView>
-        </ImageBackground>
+        </View>
       </KeyboardAvoidingView>
     );
   }
@@ -249,9 +246,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10,
     paddingLeft: 10,
-    paddingTop: 20,
-    borderBottomWidth: 2,
-    borderColor: "#fff"
+    marginTop: StatusBar.currentHeight
   },
   icon: {
     height: 32,

@@ -6,42 +6,65 @@ import {
   ActivityIndicator,
   Image,
   TouchableHighlight,
-  ImageBackground,
+  StatusBar,
   TextInput,
   Dimensions,
   StyleSheet,
   ScrollView,
   KeyboardAvoidingView,
-  AsyncStorage
+  AsyncStorage,
+  Easing
 } from "react-native";
 
 import { LinearGradient } from "expo-linear-gradient";
 
-import { Rating } from "react-native-ratings";
+import Rating from "react-native-rating";
+import images from "../components/RatingImages";
 import api from "../services/api";
 
 var width = Dimensions.get("window").width;
-const HEART_IMAGE = require("../assets/icons/heart.png");
 
 export default class Avaliar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      message: props.navigation.getParam("description")
-        ? props.navigation.getParam("description")
-        : "",
-      vote: props.navigation.getParam("vote")
-        ? props.navigation.getParam("vote")
-        : 5,
-      loading: false
-    };
+  state = {
+    message: this.props.navigation.getParam("description")
+      ? this.props.navigation.getParam("description")
+      : "",
+    vote: this.props.navigation.getParam("vote") || 0,
+    voteRating: this.props.navigation.getParam("vote") || 0,
+    loading: false
+  };
+  async componentWillMount() {
+    const userToken = await AsyncStorage.getItem("@User:token");
+    const votes = await api.get("/votes", {
+      headers: { Authorization: `Bearer ${userToken}` }
+    });
+    const res = votes.data.filter(
+      vote => vote.place.name === this.props.navigation.getParam("name")
+    );
+    if (res.length > 0) {
+      this.setState({
+        ...this.state,
+        message: res[0].description,
+        vote: res[0].vote,
+        voteRating: res[0].vote,
+        voteId: res[0]._id
+      });
+    } else {
+      this.setState({
+        ...this.state,
+        message: "",
+        vote: 0,
+        voteId: null
+      });
+    }
   }
   async handleUpdateRating() {
     this.setState({ ...this.state, loading: true });
     const userToken = await AsyncStorage.getItem("@User:token");
     if (this.state.message.length > 1) {
       await api.patch(
-        `/votes/${this.props.navigation.getParam("voteId")}`,
+        `/votes/${this.props.navigation.getParam("voteId") ||
+          this.state.voteId}`,
         {
           vote: this.state.voteRating || this.state.vote,
           description: this.state.message
@@ -72,101 +95,109 @@ export default class Avaliar extends React.Component {
   render() {
     return (
       <KeyboardAvoidingView behavior="padding" enabled>
-        <ImageBackground
-          source={require("../assets/icons/fundo.jpg")}
-          style={{ width: "100%", height: "100%" }}
-        >
-          <View style={styles.view}>
-            <View style={styles.header}>
-              <TouchableHighlight
-                onPress={() =>
-                  this.props.navigation.navigate("MinhasAvaliacoes")
-                }
-                underlayColor={"#FFFFFF00"}
-              >
-                <Image
-                  source={require("../assets/icons/back.png")}
-                  style={styles.icon}
-                />
-              </TouchableHighlight>
-              <Text style={styles.text}>AVALIAR</Text>
-              <View style={[{ width: 45 }]} />
-            </View>
-
-            <ScrollView>
-              <View style={styles.flatList}>
-                <Text style={styles.title}>
-                  {this.props.navigation.getParam("name")}
-                </Text>
-                <Rating
-                  onFinishRating={vote =>
-                    this.setState({ ...this.state, voteRating: vote })
-                  }
-                  startingValue={this.state.vote}
-                  minValue={1}
-                  type="heart"
-                  imageSize={30}
-                  style={{ marginBottom: 20 }}
-                />
-                <TextInput
-                  style={{
-                    backgroundColor: "#fff",
-                    width: width - 50,
-                    fontSize: 16,
-                    paddingLeft: 15,
-                    marginBottom: 15
-                  }}
-                  onChangeText={message => this.setState({ message })}
-                  value={this.state.message}
-                  multiline={true}
-                  numberOfLines={15}
-                  textAlignVertical={"top"}
-                  placeholder={
-                    "Conte-nos como foi sua experiência neste lugar."
-                  }
-                />
-                {!this.state.loading ? (
-                  <View style={{ flexDirection: "row" }}>
-                    <TouchableHighlight
-                      onPress={() =>
-                        this.props.navigation.navigate("MinhasAvaliacoes")
-                      }
-                      underlayColor={"#FFFFFF00"}
-                    >
-                      <View style={styles.buttonCancelar}>
-                        <Text style={styles.bottonTextCancelar}>Cancelar</Text>
-                      </View>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight
-                      onPress={
-                        this.props.navigation.getParam("voteId")
-                          ? this.handleUpdateRating.bind(this)
-                          : this.handleSaveRating.bind(this)
-                      }
-                      underlayColor={"#FFFFFF00"}
-                    >
-                      <LinearGradient
-                        start={{ x: 0, y: 1 }}
-                        end={{ x: 1, y: 1 }}
-                        colors={["#D11C46", "#FA8624"]}
-                        style={styles.button}
-                      >
-                        <Text style={styles.bottonText}>
-                          {this.props.navigation.getParam("voteId")
-                            ? "ATUALIZAR"
-                            : "SALVAR"}
-                        </Text>
-                      </LinearGradient>
-                    </TouchableHighlight>
-                  </View>
-                ) : (
-                  <ActivityIndicator size="large" color="#0000ff" />
-                )}
-              </View>
-            </ScrollView>
+        <View style={{ width: "100%", height: "100%" }}>
+          <View style={styles.header}>
+            <TouchableHighlight
+              onPress={() =>
+                this.props.navigation.getParam("name")
+                  ? this.props.navigation.goBack()
+                  : this.props.navigation.navigate("MinhasAvaliacoes")
+              }
+              underlayColor={"#FFFFFF00"}
+            >
+              <Image
+                source={require("../assets/icons/back.png")}
+                style={styles.icon}
+              />
+            </TouchableHighlight>
+            <Text style={styles.text}>AVALIAR</Text>
+            <View style={[{ width: 45 }]} />
           </View>
-        </ImageBackground>
+
+          <ScrollView style={styles.view}>
+            <View style={styles.flatList}>
+              <Text style={styles.title}>
+                {this.props.navigation.getParam("name")}
+              </Text>
+              <Rating
+                onChange={rating =>
+                  this.setState({ ...this.state, voteRating: rating })
+                }
+                selectedStar={images.starFilled}
+                unselectedStar={images.starUnfilled}
+                stagger={80}
+                maxScale={1.4}
+                starStyle={{
+                  width: 32,
+                  height: 32
+                }}
+                config={{
+                  easing: Easing.inOut(Easing.ease),
+                  duration: 350
+                }}
+                initial={this.state.vote}
+                editable={true}
+              />
+
+              <TextInput
+                style={{
+                  backgroundColor: "#fff",
+                  width: width - 50,
+                  fontSize: 16,
+                  paddingLeft: 15,
+                  marginBottom: 15,
+                  marginTop: 15
+                }}
+                onChangeText={message => this.setState({ message })}
+                value={this.state.message}
+                multiline={true}
+                numberOfLines={15}
+                textAlignVertical={"top"}
+                placeholder={"Conte-nos como foi sua experiência neste lugar."}
+              />
+              {!this.state.loading ? (
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableHighlight
+                    onPress={() =>
+                      this.props.navigation.navigate("MinhasAvaliacoes")
+                    }
+                    underlayColor={"#FFFFFF00"}
+                  >
+                    <View style={styles.buttonCancelar}>
+                      <Text style={styles.bottonTextCancelar}>Cancelar</Text>
+                    </View>
+                  </TouchableHighlight>
+
+                  <TouchableHighlight
+                    onPress={
+                      typeof this.props.navigation.getParam("voteId") !==
+                        "undefined" || this.state.vote
+                        ? this.handleUpdateRating.bind(this)
+                        : this.handleSaveRating.bind(this)
+                    }
+                    underlayColor={"#FFFFFF00"}
+                  >
+                    <LinearGradient
+                      start={{ x: 0, y: 1 }}
+                      end={{ x: 1, y: 1 }}
+                      colors={["#D11C46", "#FA8624"]}
+                      style={styles.button}
+                    >
+                      <Text style={styles.bottonText}>
+                        {this.props.navigation.getParam("voteId") ||
+                        this.state.vote
+                          ? "ATUALIZAR"
+                          : "SALVAR"}
+                      </Text>
+                    </LinearGradient>
+                  </TouchableHighlight>
+                </View>
+              ) : (
+                <ActivityIndicator size="large" color="#0000ff" />
+              )}
+            </View>
+          </ScrollView>
+        </View>
       </KeyboardAvoidingView>
     );
   }
@@ -191,9 +222,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10,
     paddingLeft: 10,
-    paddingTop: 20,
-    borderBottomWidth: 2,
-    borderColor: "#fff"
+    marginTop: StatusBar.currentHeight
   },
   icon: {
     height: 32,

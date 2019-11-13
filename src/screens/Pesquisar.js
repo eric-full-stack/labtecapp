@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
-  ImageBackground,
+  StatusBar,
   TextInput,
   Dimensions,
   ScrollView,
@@ -14,7 +14,7 @@ import {
   ActivityIndicator,
   FlatList
 } from "react-native";
-
+import * as Location from "expo-location";
 import ItemFeed from "../components/ItemFeed";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -36,13 +36,15 @@ export default class Pesquisar extends React.Component {
     try {
       this.setState({ ...this.state, loading: true });
       const userToken = await AsyncStorage.getItem("@User:token");
+      let location = await Location.getCurrentPositionAsync({});
+      location = `${location.coords.latitude},${location.coords.longitude}`;
       await api
         .get(`/textSearch`, {
-          params: { location: this.state.term },
+          params: { query: this.state.term, location },
           headers: { Authorization: `Bearer ${userToken}` }
         })
         .then(res => {
-          const lugares = res.data;
+          const lugares = res.data.results;
           this.setState({ lugares });
         });
       this.setState({ ...this.state, loading: false });
@@ -52,67 +54,66 @@ export default class Pesquisar extends React.Component {
   }
   render() {
     return (
-      <ImageBackground
-        source={require("../assets/icons/fundo.jpg")}
-        style={{ width: "100%", height: "100%" }}
-      >
-        <View style={styles.view}>
-          <View style={styles.header}>
-            <Icon
-              onPress={() => this.props.navigation.openDrawer()}
-              name="menu"
-              size={34}
-              color="#fff"
+      <View style={{ width: "100%", height: "100%" }}>
+        <View style={styles.header}>
+          <Icon
+            onPress={() => this.props.navigation.openDrawer()}
+            name="menu"
+            size={34}
+            color="#fff"
+          />
+          <Text style={styles.title}>PESQUISAR</Text>
+          <View style={[{ flexDirection: "row" }]}>
+            <TouchableHighlight
+              onPress={() => this.props.navigation.navigate("Feed")}
+              underlayColor={"#FFFFFF00"}
+            >
+              <Image
+                source={require("../assets/icons/header-search.png")}
+                style={styles.icon}
+              />
+            </TouchableHighlight>
+          </View>
+        </View>
+
+        <ScrollView style={styles.view}>
+          <View style={styles.viewInput}>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={term => this.setState({ term })}
+              value={this.state.term}
+              placeholder={"Restaurante..."}
+              autoFocus
             />
-            <Text style={styles.title}>PESQUISAR</Text>
-            <View style={[{ flexDirection: "row" }]}>
-              <TouchableHighlight
-                onPress={() => this.props.navigation.navigate("Feed")}
-                underlayColor={"#FFFFFF00"}
-              >
-                <Image
-                  source={require("../assets/icons/header-search.png")}
-                  style={styles.icon}
-                />
-              </TouchableHighlight>
-            </View>
+            <TouchableHighlight onPress={this.pesquisaTermo.bind(this)}>
+              <Image
+                source={require("../assets/icons/header-search.png")}
+                style={styles.icon}
+              />
+            </TouchableHighlight>
           </View>
 
-          <ScrollView>
-            <View style={styles.viewInput}>
-              <TextInput
-                style={styles.textInput}
-                onChangeText={term => this.setState({ term })}
-                value={this.state.term}
-                placeholder={"Restaurante..."}
-                autoFocus
-              />
-              <TouchableHighlight onPress={this.pesquisaTermo.bind(this)}>
-                <Image
-                  source={require("../assets/icons/header-search.png")}
-                  style={styles.icon}
+          {this.state.loading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <FlatList
+              data={this.state.lugares}
+              contentContainerStyle={{
+                alignSelf: "center"
+              }}
+              numColumns={2}
+              keyExtractor={item => `${item.id}`}
+              renderItem={({ item }) => (
+                <ItemFeed
+                  {...item}
+                  navigation={this.props.navigation}
+                  back={"Pesquisar"}
                 />
-              </TouchableHighlight>
-            </View>
-
-            {this.state.loading ? (
-              <ActivityIndicator size="large" color="#0000ff" />
-            ) : (
-              <FlatList
-                data={this.state.lugares}
-                contentContainerStyle={{
-                  alignSelf: "center"
-                }}
-                numColumns={2}
-                keyExtractor={item => `${item.id}`}
-                renderItem={({ item }) => (
-                  <ItemFeed {...item} navigation={this.props.navigation} />
-                )}
-              />
-            )}
-          </ScrollView>
-        </View>
-      </ImageBackground>
+              )}
+            />
+          )}
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -143,9 +144,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10,
     paddingLeft: 10,
-    paddingTop: 20,
-    borderBottomWidth: 2,
-    borderColor: "#fff"
+    marginTop: StatusBar.currentHeight
   },
   icon: {
     height: 32,

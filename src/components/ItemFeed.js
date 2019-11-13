@@ -9,13 +9,16 @@ import {
   TouchableHighlight
 } from "react-native";
 
-import { Rating } from "react-native-ratings";
+import Rating from "react-native-rating";
 import { LinearGradient } from "expo-linear-gradient";
-
+import images from "./RatingImages";
 var { width } = Dimensions.get("window");
-const HEART_IMAGE = require("../assets/icons/heart.png");
 
 export default class ItemFeed extends React.Component {
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextProps.place_id !== this.props.place_id) return true;
+    return false;
+  }
   render() {
     return (
       <TouchableHighlight
@@ -52,12 +55,17 @@ export default class ItemFeed extends React.Component {
             >
               <Text style={styles.title}>{this.props.name}</Text>
               <Rating
-                type="heart"
-                ratingCount={5}
-                ratingBackgroundColor="#f2b3c5"
-                startingValue={this.props.rating || 5}
-                readonly
-                imageSize={30}
+                type="star"
+                selectedStar={images.starFilled}
+                unselectedStar={images.starUnfilled}
+                stagger={80}
+                maxScale={1.4}
+                starStyle={{
+                  width: 32,
+                  height: 32
+                }}
+                initial={this.props.rating || 5}
+                editable={false}
               />
             </LinearGradient>
           </View>

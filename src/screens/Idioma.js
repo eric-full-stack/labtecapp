@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
-  ImageBackground,
+  StatusBar,
   Dimensions,
   ScrollView
 } from "react-native";
@@ -16,80 +16,75 @@ var width = Dimensions.get("window").width;
 export default class Idioma extends React.Component {
   render() {
     return (
-      <ImageBackground
-        source={require("../assets/icons/fundo.jpg")}
-        style={{ width: "100%", height: "100%" }}
-      >
-        <View style={styles.view}>
-          <View style={styles.header}>
-            <TouchableHighlight
-              onPress={() => this.props.navigation.openDrawer()}
-              underlayColor={"#FFFFFF00"}
+      <View style={{ width: "100%", height: "100%" }}>
+        <View style={styles.header}>
+          <TouchableHighlight
+            onPress={() => this.props.navigation.openDrawer()}
+            underlayColor={"#FFFFFF00"}
+          >
+            <Image
+              source={require("../assets/icons/back.png")}
+              style={styles.icon}
+            />
+          </TouchableHighlight>
+          <Text style={styles.text}>IDIOMA</Text>
+          <View style={[{ width: 45 }]} />
+        </View>
+
+        <ScrollView style={styles.view}>
+          <View style={[{ alignItems: "center" }]}>
+            <View
+              style={[
+                { alignItems: "center", marginTop: 30, marginBottom: 30 }
+              ]}
             >
-              <Image
-                source={require("../assets/icons/back.png")}
-                style={styles.icon}
-              />
-            </TouchableHighlight>
-            <Text style={styles.text}>IDIOMA</Text>
-            <View style={[{ width: 45 }]} />
-          </View>
-
-          <ScrollView>
-            <View style={[{ alignItems: "center" }]}>
-              <View
-                style={[
-                  { alignItems: "center", marginTop: 30, marginBottom: 30 }
-                ]}
+              <TouchableHighlight
+                onPress={() => null}
+                underlayColor={"#FFFFFF00"}
               >
-                <TouchableHighlight
-                  onPress={() => null}
-                  underlayColor={"#FFFFFF00"}
-                >
-                  <View style={[{ alignItems: "center" }]}>
-                    <Image
-                      source={require("../assets/pt-br.png")}
-                      style={styles.flag}
-                    />
-                    <Text style={styles.titleIdioma}>Português</Text>
-                  </View>
-                </TouchableHighlight>
-              </View>
+                <View style={[{ alignItems: "center" }]}>
+                  <Image
+                    source={require("../assets/pt-br.png")}
+                    style={styles.flag}
+                  />
+                  <Text style={styles.titleIdioma}>Português</Text>
+                </View>
+              </TouchableHighlight>
+            </View>
 
-              <View style={styles.maisIdiomas}>
-                <Text style={styles.descricao}>EM BREVE!</Text>
-                <Text style={styles.descricao}>
-                  Novos Idioma estarão disponíveis.
-                </Text>
+            <View style={styles.maisIdiomas}>
+              <Text style={styles.descricao}>EM BREVE!</Text>
+              <Text style={styles.descricao}>
+                Novos Idioma estarão disponíveis.
+              </Text>
 
-                <View style={styles.maisIdiomas2}>
-                  <View style={[{ alignItems: "center" }]}>
-                    <Image
-                      source={require("../assets/fr.png")}
-                      style={styles.flag}
-                    />
-                    <Text style={styles.titleIdioma}>Francês</Text>
-                  </View>
-                  <View style={[{ alignItems: "center" }]}>
-                    <Image
-                      source={require("../assets/es.png")}
-                      style={styles.flag}
-                    />
-                    <Text style={styles.titleIdioma}>Espanhol</Text>
-                  </View>
-                  <View style={[{ alignItems: "center" }]}>
-                    <Image
-                      source={require("../assets/en.png")}
-                      style={styles.flag}
-                    />
-                    <Text style={styles.titleIdioma}>Inglês</Text>
-                  </View>
+              <View style={styles.maisIdiomas2}>
+                <View style={[{ alignItems: "center" }]}>
+                  <Image
+                    source={require("../assets/fr.png")}
+                    style={styles.flag}
+                  />
+                  <Text style={styles.titleIdioma}>Francês</Text>
+                </View>
+                <View style={[{ alignItems: "center" }]}>
+                  <Image
+                    source={require("../assets/es.png")}
+                    style={styles.flag}
+                  />
+                  <Text style={styles.titleIdioma}>Espanhol</Text>
+                </View>
+                <View style={[{ alignItems: "center" }]}>
+                  <Image
+                    source={require("../assets/en.png")}
+                    style={styles.flag}
+                  />
+                  <Text style={styles.titleIdioma}>Inglês</Text>
                 </View>
               </View>
             </View>
-          </ScrollView>
-        </View>
-      </ImageBackground>
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -113,8 +108,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10,
     paddingLeft: 10,
-    borderBottomWidth: 2,
-    borderColor: "#fff"
+    marginTop: StatusBar.currentHeight
   },
   icon: {
     height: 32,

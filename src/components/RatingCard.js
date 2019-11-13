@@ -2,12 +2,11 @@ import React from "react";
 
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 
-import { Rating } from "react-native-ratings";
+import Rating from "react-native-rating";
 
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-
+import images from "./RatingImages";
 var { width } = Dimensions.get("window");
-const HEART_IMAGE = require("../assets/icons/heart.png");
 
 export default class RatingCard extends React.Component {
   render() {
@@ -17,11 +16,16 @@ export default class RatingCard extends React.Component {
           <View>
             <Text style={styles.title}>{this.props.place.name}</Text>
             <Rating
-              type="heart"
-              startingValue={this.props.vote}
-              imageSize={30}
-              readonly
-              style={{ alignItems: "flex-start" }}
+              selectedStar={images.starFilled}
+              unselectedStar={images.starUnfilled}
+              stagger={80}
+              maxScale={1.4}
+              starStyle={{
+                width: 32,
+                height: 32
+              }}
+              initial={this.props.vote || 0}
+              editable={false}
             />
           </View>
           <Icon

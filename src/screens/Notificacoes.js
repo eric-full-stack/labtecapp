@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
-  ImageBackground,
+  StatusBar,
   ScrollView,
   FlatList
 } from "react-native";
@@ -47,35 +47,30 @@ export default class Notificacoes extends React.Component {
   }
   render() {
     return (
-      <ImageBackground
-        source={require("../assets/icons/fundo.jpg")}
-        style={{ width: "100%", height: "100%" }}
-      >
-        <View style={styles.view}>
-          <View style={styles.header}>
-            <TouchableHighlight
-              onPress={() => this.props.navigation.openDrawer()}
-              underlayColor={"#FFFFFF00"}
-            >
-              <Image
-                source={require("../assets/icons/back.png")}
-                style={styles.icon}
-              />
-            </TouchableHighlight>
-            <Text style={styles.text}>NOTIFICAÇÕES</Text>
-            <View style={[{ width: 45 }]} />
-          </View>
-          <ScrollView>
-            <View style={styles.flatList}>
-              <FlatList
-                data={this.state.notifications}
-                keyExtractor={item => `${item.id}`}
-                renderItem={({ item }) => <NotificationCard {...item} />}
-              />
-            </View>
-          </ScrollView>
+      <View style={{ width: "100%", height: "100%" }}>
+        <View style={styles.header}>
+          <TouchableHighlight
+            onPress={() => this.props.navigation.openDrawer()}
+            underlayColor={"#FFFFFF00"}
+          >
+            <Image
+              source={require("../assets/icons/back.png")}
+              style={styles.icon}
+            />
+          </TouchableHighlight>
+          <Text style={styles.text}>NOTIFICAÇÕES</Text>
+          <View style={[{ width: 45 }]} />
         </View>
-      </ImageBackground>
+        <ScrollView style={styles.view}>
+          <View style={styles.flatList}>
+            <FlatList
+              data={this.state.notifications}
+              keyExtractor={item => `${item.id}`}
+              renderItem={({ item }) => <NotificationCard {...item} />}
+            />
+          </View>
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -99,9 +94,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10,
     paddingLeft: 10,
-    paddingTop: 20,
-    borderBottomWidth: 2,
-    borderColor: "#fff"
+    marginTop: StatusBar.currentHeight
   },
   icon: {
     height: 32,

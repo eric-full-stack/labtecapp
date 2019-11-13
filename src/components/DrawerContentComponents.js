@@ -8,6 +8,7 @@ import {
   ImageBackground,
   TouchableHighlight,
   AsyncStorage,
+  StatusBar,
   ScrollView
 } from "react-native";
 
@@ -40,8 +41,13 @@ export default class DrawerContentComponents extends React.Component {
         source={require("../assets/icons/fundo.jpg")}
         style={{ width: "100%", height: "100%" }}
       >
+        <StatusBar barStyle="dark-content" backgroundColor="white" />
         <ScrollView style={styles.view}>
-          <View style={[{ alignItems: "flex-end" }]}>
+          <View
+            style={[
+              { alignItems: "flex-end", marginTop: StatusBar.currentHeight }
+            ]}
+          >
             <TouchableHighlight
               onPress={() => this.props.navigation.closeDrawer()}
               underlayColor={"#FFFFFF00"}

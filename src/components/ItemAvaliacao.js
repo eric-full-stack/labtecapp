@@ -1,8 +1,8 @@
 import React from "react";
 
 import { View, StyleSheet, Dimensions, Image, Text } from "react-native";
-
-import { Rating } from "react-native-ratings";
+import Rating from "react-native-rating";
+import images from "../components/RatingImages";
 
 var { width } = Dimensions.get("window");
 
@@ -24,11 +24,16 @@ export default class ItemAvaliacao extends React.Component {
           <View style={{ marginLeft: 20 }}>
             <Text style={styles.name}>{this.props.user.name}</Text>
             <Rating
-              type="heart"
-              ratingCount={5}
-              startingValue={this.props.vote}
-              imageSize={25}
-              readonly
+              selectedStar={images.starFilled}
+              unselectedStar={images.starUnfilled}
+              stagger={80}
+              maxScale={1.4}
+              starStyle={{
+                width: 32,
+                height: 32
+              }}
+              initial={this.props.vote || 0}
+              editable={false}
             />
           </View>
         </View>

@@ -9,7 +9,6 @@ import {
   View,
   Text,
   StyleSheet,
-  ImageBackground,
   Image,
   TextInput,
   Dimensions,
@@ -21,6 +20,7 @@ import {
 import api from "../services/api";
 
 import { LinearGradient } from "expo-linear-gradient";
+import { SafeAreaView } from "react-navigation";
 
 var width = Dimensions.get("window").width;
 
@@ -114,70 +114,67 @@ export default class Login extends React.Component {
   render() {
     return (
       <KeyboardAvoidingView behavior="padding" enabled>
-        <ImageBackground
-          source={require("../assets/icons/fundo.jpg")}
-          style={{ width: "100%", height: "100%" }}
+        <SafeAreaView
+          style={{ with: "100%", height: "100%", marginTop: "20%" }}
         >
-          <View style={{ flex: 1, justifyContent: "space-between" }}>
-            <View />
-            <Image
-              source={require("../assets/LGBT-friendly-LOGO.png")}
-              style={styles.logo}
-            />
-            <View style={styles.conteudo}>
-              <TouchableHighlight onPress={this.handleFacebookLogin.bind(this)}>
-                <View style={styles.botaoFacebook}>
-                  <Text
-                    style={{ color: "#fff", fontSize: 18, fontWeight: "bold" }}
-                  >
-                    Entrar com o Facebook
-                  </Text>
-                </View>
-              </TouchableHighlight>
-              <Text
-                style={{
-                  color: "#fff",
-                  fontSize: 16,
-                  margin: 10,
-                  alignSelf: "center"
-                }}
-              >
-                ou
-              </Text>
-              <TextInput
-                style={styles.textInput}
-                onChangeText={email => this.setState({ email })}
-                value={this.state.email}
-                placeholder={"E-mail"}
-                placeholderTextColor={"#fff"}
-              />
-              <TextInput
-                style={styles.textInput}
-                onChangeText={password => this.setState({ password })}
-                value={this.state.password}
-                secureTextEntry={true}
-                textContentType={"password"}
-                placeholder={"Senha"}
-                placeholderTextColor={"#fff"}
-              />
-              {!this.state.loading ? (
-                <TouchableHighlight
-                  underlayColor={"#FFFFFF00"}
-                  onPress={this.handleLogin.bind(this)}
+          <Image
+            source={require("../assets/LGBT-friendly-LOGO.png")}
+            style={styles.logo}
+          />
+          <View style={styles.conteudo}>
+            <TouchableHighlight onPress={this.handleFacebookLogin.bind(this)}>
+              <View style={styles.botaoFacebook}>
+                <Text
+                  style={{ color: "#fff", fontSize: 18, fontWeight: "bold" }}
                 >
-                  <LinearGradient
-                    start={{ x: 0, y: 1 }}
-                    end={{ x: 1, y: 1 }}
-                    colors={["#D11C46", "#FA8624"]}
-                    style={styles.button}
-                  >
-                    <Text style={styles.bottonText}>ENTRAR</Text>
-                  </LinearGradient>
-                </TouchableHighlight>
-              ) : (
-                <ActivityIndicator size="large" color="#0000ff" />
-              )}
-              {/* <Text
+                  Entrar com o Facebook
+                </Text>
+              </View>
+            </TouchableHighlight>
+            <Text
+              style={{
+                color: "#fff",
+                fontSize: 16,
+                margin: 10,
+                alignSelf: "center"
+              }}
+            >
+              ou
+            </Text>
+            <TextInput
+              style={styles.textInput}
+              onChangeText={email => this.setState({ email })}
+              value={this.state.email}
+              placeholder={"E-mail"}
+              placeholderTextColor={"#fff"}
+            />
+            <TextInput
+              style={styles.textInput}
+              onChangeText={password => this.setState({ password })}
+              value={this.state.password}
+              secureTextEntry={true}
+              textContentType={"password"}
+              placeholder={"Senha"}
+              placeholderTextColor={"#fff"}
+            />
+            {!this.state.loading ? (
+              <TouchableHighlight
+                underlayColor={"#FFFFFF00"}
+                onPress={this.handleLogin.bind(this)}
+              >
+                <LinearGradient
+                  start={{ x: 0, y: 1 }}
+                  end={{ x: 1, y: 1 }}
+                  colors={["#D11C46", "#FA8624"]}
+                  style={styles.button}
+                >
+                  <Text style={styles.bottonText}>ENTRAR</Text>
+                </LinearGradient>
+              </TouchableHighlight>
+            ) : (
+              <ActivityIndicator size="large" color="#0000ff" />
+            )}
+            {/* <Text
                 style={styles.textButtonType}
                 onPress={() =>
                   this.props.navigation.navigate("RedefinicaoDeSenha")
@@ -185,16 +182,15 @@ export default class Login extends React.Component {
               >
                 ESQUECI MINHA SENHA
               </Text> */}
-              <Text
-                style={styles.textButtonType}
-                onPress={() => this.props.navigation.navigate("Cadastro")}
-              >
-                Não possui conta? CADASTRE-SE
-              </Text>
-            </View>
-            <View />
+            <Text
+              style={styles.textButtonType}
+              onPress={() => this.props.navigation.navigate("Cadastro")}
+            >
+              Não possui conta? CADASTRE-SE
+            </Text>
           </View>
-        </ImageBackground>
+          <View />
+        </SafeAreaView>
       </KeyboardAvoidingView>
     );
   }

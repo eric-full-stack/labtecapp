@@ -4,7 +4,7 @@ import {
   View,
   Text,
   StyleSheet,
-  ImageBackground,
+  StatusBar,
   Image,
   TextInput,
   Dimensions,
@@ -105,10 +105,8 @@ export default class Cadastro extends React.Component {
   render() {
     return (
       <KeyboardAvoidingView behavior="position" enabled>
-        <ImageBackground
-          source={require("../assets/icons/fundo.jpg")}
-          style={{ width: "100%", height: "100%" }}
-        >
+        <View style={{ width: "100%", height: "100%" }}>
+          <StatusBar barStyle="dark-content" />
           <View style={{ flex: 1, justifyContent: "space-between" }}>
             <View />
             <Image
@@ -202,7 +200,7 @@ export default class Cadastro extends React.Component {
             </View>
             <View />
           </View>
-        </ImageBackground>
+        </View>
       </KeyboardAvoidingView>
     );
   }

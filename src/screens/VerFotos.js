@@ -6,9 +6,9 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
-  ImageBackground,
   AsyncStorage,
   ScrollView,
+  StatusBar,
   FlatList
 } from "react-native";
 
@@ -31,7 +31,7 @@ export default class Local extends React.Component {
       },
       { headers: { Authorization: `Bearer ${userToken}` } }
     );
-    console.log("foi");
+
     this.setState({
       ...this.state,
       loading: false,
@@ -39,52 +39,48 @@ export default class Local extends React.Component {
     });
   }
   render() {
+    console.log(this.props.navigation.getParam("favorited"));
     return (
-      <ImageBackground
-        source={require("../assets/icons/fundo.jpg")}
-        style={{ width: "100%", height: "100%" }}
-      >
-        <View style={styles.view}>
-          <View style={styles.header}>
-            <TouchableHighlight
-              onPress={() => this.props.navigation.navigate("Local")}
-              underlayColor={"#FFFFFF00"}
-            >
-              <Image
-                source={require("../assets/icons/back-black.png")}
-                style={styles.icon}
-              />
-            </TouchableHighlight>
-            <Text style={styles.text}>
-              {this.props.navigation.getParam("name")}
-            </Text>
-            <TouchableHighlight onPress={this.handleFavorite.bind(this)}>
-              {this.state.favorited ? (
-                <Image
-                  source={require("../assets/icons/star.png")}
-                  style={styles.icon2}
-                />
-              ) : (
-                <Image
-                  source={require("../assets/icons/star_black.png")}
-                  style={styles.icon2}
-                />
-              )}
-            </TouchableHighlight>
-          </View>
-
-          <ScrollView>
-            <FlatList
-              data={this.props.navigation.getParam("photos")}
-              contentContainerStyle={{
-                alignSelf: "center"
-              }}
-              keyExtractor={item => `${item.photo_reference}`}
-              renderItem={({ item }) => <ItemFoto {...item} />}
+      <View style={{ width: "100%", height: "100%" }}>
+        <View style={styles.header}>
+          <TouchableHighlight
+            onPress={() => this.props.navigation.navigate("Local")}
+            underlayColor={"#FFFFFF00"}
+          >
+            <Image
+              source={require("../assets/icons/back-black.png")}
+              style={styles.icon}
             />
-          </ScrollView>
+          </TouchableHighlight>
+          <Text style={styles.text}>
+            {this.props.navigation.getParam("name")}
+          </Text>
+          <TouchableHighlight onPress={this.handleFavorite.bind(this)}>
+            {this.props.navigation.getParam("favorited") ? (
+              <Image
+                source={require("../assets/icons/star.png")}
+                style={styles.icon2}
+              />
+            ) : (
+              <Image
+                source={require("../assets/icons/star_black.png")}
+                style={styles.icon2}
+              />
+            )}
+          </TouchableHighlight>
         </View>
-      </ImageBackground>
+
+        <ScrollView style={styles.view}>
+          <FlatList
+            data={this.props.navigation.getParam("photos")}
+            contentContainerStyle={{
+              alignSelf: "center"
+            }}
+            keyExtractor={item => `${item.photo_reference}`}
+            renderItem={({ item }) => <ItemFoto {...item} />}
+          />
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -109,7 +105,8 @@ const styles = StyleSheet.create({
     paddingRight: 10,
     paddingLeft: 10,
     borderBottomWidth: 2,
-    borderColor: "#000"
+    borderColor: "#000",
+    marginTop: StatusBar.currentHeight
   },
   icon: {
     height: 32,

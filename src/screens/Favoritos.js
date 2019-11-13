@@ -6,7 +6,7 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
-  ImageBackground,
+  StatusBar,
   AsyncStorage,
   FlatList
 } from "react-native";
@@ -38,43 +38,40 @@ export default class Favoritos extends React.Component {
   }
   render() {
     return (
-      <ImageBackground
-        source={require("../assets/icons/fundo.jpg")}
-        style={{ width: "100%", height: "100%" }}
-      >
-        <View style={styles.view}>
-          <View style={styles.header}>
-            <TouchableHighlight
-              onPress={() => this.props.navigation.openDrawer()}
-              underlayColor={"#FFFFFF00"}
-            >
-              <Image
-                source={require("../assets/icons/back.png")}
-                style={styles.icon}
-              />
-            </TouchableHighlight>
-            <Text style={styles.text}>FAVORITOS</Text>
-            <View style={[{ width: 45 }]} />
-          </View>
-          <View style={styles.viewFlatList}>
-            <FlatList
-              data={this.state.lugares || []}
-              contentContainerStyle={{
-                alignSelf: "center"
-              }}
-              numColumns={2}
-              keyExtractor={item => `${item.place._id}`}
-              renderItem={({ item }) => (
-                <ItemFeed
-                  {...item.place}
-                  navigation={this.props.navigation}
-                  back={"Favoritos"}
-                />
-              )}
+      <View style={{ width: "100%", height: "100%" }}>
+        <StatusBar barStyle="dark-content" backgroundColor="white" />
+        <View style={styles.header}>
+          <TouchableHighlight
+            onPress={() => this.props.navigation.openDrawer()}
+            underlayColor={"#FFFFFF00"}
+          >
+            <Image
+              source={require("../assets/icons/back.png")}
+              style={styles.icon}
             />
-          </View>
+          </TouchableHighlight>
+          <Text style={styles.text}>FAVORITOS</Text>
+          <View style={[{ width: 45 }]} />
         </View>
-      </ImageBackground>
+        <View style={styles.viewFlatList}>
+          <FlatList
+            data={this.state.lugares || []}
+            contentContainerStyle={{
+              alignSelf: "center",
+              paddingBottom: 70
+            }}
+            numColumns={2}
+            keyExtractor={item => `${item.place._id}`}
+            renderItem={({ item }) => (
+              <ItemFeed
+                {...item.place}
+                navigation={this.props.navigation}
+                back={"Favoritos"}
+              />
+            )}
+          />
+        </View>
+      </View>
     );
   }
 }
@@ -98,9 +95,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10,
     paddingLeft: 10,
-    paddingTop: 20,
-    borderBottomWidth: 2,
-    borderColor: "#fff"
+    marginTop: StatusBar.currentHeight
   },
   icon: {
     height: 32,

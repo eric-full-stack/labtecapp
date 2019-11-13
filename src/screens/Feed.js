@@ -4,7 +4,7 @@ import {
   View,
   Text,
   StyleSheet,
-  ImageBackground,
+  StatusBar,
   Image,
   FlatList,
   TouchableHighlight,
@@ -28,41 +28,98 @@ export default class Feed extends React.Component {
       if (status !== "granted") {
         alert("Permissão de localização não concedida.");
       }
-      let location = await Location.getCurrentPositionAsync({});
-
-      location = `${location.coords.latitude},${location.coords.longitude}`;
-      const userToken = await AsyncStorage.getItem("@User:token");
-      await api
-        .get(`/nearbySearch`, {
-          params: { location },
-          headers: { Authorization: `Bearer ${userToken}` }
-        })
-        .then(res => {
-          const lugares = res.data;
-          this.setState({ lugares });
-        });
-      this.setState({ ...this.state, loading: false });
+      this.fetchData();
     } catch (err) {
       console.log(err);
     }
   }
+  fetchData = async (refresh = null) => {
+    let location = await Location.getCurrentPositionAsync({});
+    location = `${location.coords.latitude},${location.coords.longitude}`;
+    const next_page_token = await AsyncStorage.getItem(
+      "@Places:next_page_token"
+    );
+    const userToken = await AsyncStorage.getItem("@User:token");
+    const response = await api.get(`/nearbySearch`, {
+      params: { location, pagetoken: next_page_token },
+      headers: { Authorization: `Bearer ${userToken}` }
+    });
+    if (
+      (response.data.next_page_token &&
+        response.data.next_page_token !== next_page_token) ||
+      (response.data.next_page_token && next_page_token === null)
+    ) {
+      await AsyncStorage.setItem(
+        "@Places:next_page_token",
+        response.data.next_page_token
+      );
+    } else {
+      await AsyncStorage.removeItem("@Places:next_page_token");
+    }
+
+    this.setState({
+      ...this.state,
+      loadingMore: false,
+      loading: false,
+      refreshing: false,
+      lugares: refresh
+        ? [...response.data.results]
+        : [...this.state.lugares, ...response.data.results]
+    });
+  };
   state = {
     status: false,
     location: null,
     latlon: null,
-    lugares: []
+    lugares: [],
+    loadingMore: false,
+    refreshing: false,
+    next_page_token: null
   };
 
-  ShowHideTextComponentView = () => {
-    this.setState({ status: !this.state.status });
+  _renderFooter = () => {
+    if (!this.state.loadingMore) {
+      return null;
+    }
+    return (
+      <View
+        style={{
+          position: "relative",
+          width: "100%",
+          height: 50,
+          paddingVertical: 20,
+          borderTopWidth: 1,
+          marginTop: 10,
+          marginBottom: 10,
+          borderColor: "gray"
+        }}
+      >
+        <ActivityIndicator animating size="large" />
+      </View>
+    );
+  };
+
+  handleLoadMore = async () => {
+    if (this.state.loading === false && this.state.loadingMore === false) {
+      const next_page_token = await AsyncStorage.getItem(
+        "@Places:next_page_token"
+      );
+      if (next_page_token) {
+        this.setState({ ...this.state, loadingMore: true });
+        await this.fetchData();
+      }
+    }
+  };
+
+  _handleRefresh = async () => {
+    this.setState({ ...this.state, refreshing: true });
+    await this.fetchData(true);
   };
 
   render() {
     return (
-      <ImageBackground
-        source={require("../assets/icons/fundo.jpg")}
-        style={{ width: "100%", height: "100%" }}
-      >
+      <View>
+        <StatusBar barStyle="dark-content" />
         <View style={styles.header}>
           <Icon
             onPress={() => this.props.navigation.openDrawer()}
@@ -81,27 +138,34 @@ export default class Feed extends React.Component {
                 style={styles.icon}
               />
             </TouchableHighlight>
-            {/*<TouchableHighlight onPress={this.ShowHideTextComponentView} underlayColor={'#FFFFFF00'}><Image source={require('../assets/icons/header-maps.png')} style={styles.icon} /></TouchableHighlight>*/}
           </View>
         </View>
         <View style={styles.viewFlatList}>
-          {this.state.loading ? (
-            <ActivityIndicator size="large" color="#0000ff" />
-          ) : (
+          {!this.state.loading && (
             <FlatList
+              onEndReached={this.handleLoadMore}
+              onEndReachedThreshold={0.5}
               data={this.state.lugares}
               contentContainerStyle={{
-                alignSelf: "center"
+                alignSelf: "center",
+                paddingBottom: 70
               }}
+              scrollEnabled={!this.state.loadingMore}
               numColumns={2}
-              keyExtractor={item => `${item.id}`}
+              onRefresh={this._handleRefresh}
+              refreshing={this.state.refreshing}
+              keyExtractor={item => item._id || item.id}
               renderItem={({ item }) => (
                 <ItemFeed {...item} navigation={this.props.navigation} />
               )}
+              ListFooterComponent={this._renderFooter}
             />
           )}
+          {(this.state.loading || this.state.loadingMore) && (
+            <ActivityIndicator />
+          )}
         </View>
-      </ImageBackground>
+      </View>
     );
   }
 }
@@ -109,13 +173,13 @@ export default class Feed extends React.Component {
 const styles = StyleSheet.create({
   header: {
     height: 58,
+    marginTop: StatusBar.currentHeight,
     backgroundColor: "rgba(0, 0, 0, 0.75)",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingRight: 10,
-    paddingLeft: 10,
-    paddingTop: 20
+    paddingLeft: 10
   },
   title: {
     color: "#fff",
@@ -130,6 +194,6 @@ const styles = StyleSheet.create({
   },
   viewFlatList: {
     padding: 5,
-    marginBottom: 90
+    marginBottom: 120
   }
 });

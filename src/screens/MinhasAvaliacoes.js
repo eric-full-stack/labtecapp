@@ -6,11 +6,11 @@ import {
   StyleSheet,
   Image,
   TouchableHighlight,
-  ImageBackground,
   AsyncStorage,
   ScrollView,
   ActivityIndicator,
   KeyboardAvoidingView,
+  StatusBar,
   FlatList
 } from "react-native";
 
@@ -45,46 +45,38 @@ export default class MinhasAvaliacoes extends React.Component {
   }
   render() {
     return (
-      <KeyboardAvoidingView behavior="padding" enabled>
-        <ImageBackground
-          source={require("../assets/icons/fundo.jpg")}
-          style={{ width: "100%", height: "100%" }}
-        >
-          <View style={styles.view}>
-            <View style={styles.header}>
-              <TouchableHighlight
-                onPress={() => this.props.navigation.openDrawer()}
-                underlayColor={"#FFFFFF00"}
-              >
-                <Image
-                  source={require("../assets/icons/back.png")}
-                  style={styles.icon}
-                />
-              </TouchableHighlight>
-              <Text style={styles.text}>MINHAS AVALIAÇÕES</Text>
-              <View style={[{ width: 45 }]} />
+      <View style={{ width: "100%", height: "100%" }}>
+        <StatusBar barStyle="dark-content" backgroundColor="white" />
+
+        <View style={styles.header}>
+          <TouchableHighlight
+            onPress={() => this.props.navigation.openDrawer()}
+            underlayColor={"#FFFFFF00"}
+          >
+            <Image
+              source={require("../assets/icons/back.png")}
+              style={styles.icon}
+            />
+          </TouchableHighlight>
+          <Text style={styles.text}>MINHAS AVALIAÇÕES</Text>
+          <View style={[{ width: 45 }]} />
+        </View>
+        <ScrollView style={styles.view}>
+          {!this.state.loading ? (
+            <View style={styles.flatList}>
+              <FlatList
+                data={this.state.ratings}
+                keyExtractor={item => `${item._id}`}
+                renderItem={({ item }) => (
+                  <RatingCard {...item} navigation={this.props.navigation} />
+                )}
+              />
             </View>
-            <ScrollView>
-              {!this.state.loading ? (
-                <View style={styles.flatList}>
-                  <FlatList
-                    data={this.state.ratings}
-                    keyExtractor={item => `${item._id}`}
-                    renderItem={({ item }) => (
-                      <RatingCard
-                        {...item}
-                        navigation={this.props.navigation}
-                      />
-                    )}
-                  />
-                </View>
-              ) : (
-                <ActivityIndicator size="large" color="#0000ff" />
-              )}
-            </ScrollView>
-          </View>
-        </ImageBackground>
-      </KeyboardAvoidingView>
+          ) : (
+            <ActivityIndicator size="large" color="#0000ff" />
+          )}
+        </ScrollView>
+      </View>
     );
   }
 }
@@ -108,9 +100,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingRight: 10,
     paddingLeft: 10,
-    paddingTop: 20,
-    borderBottomWidth: 2,
-    borderColor: "#fff"
+    marginTop: StatusBar.currentHeight
   },
   icon: {
     height: 32,
